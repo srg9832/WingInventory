@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d2341">
+  <meta name="description" content="MT-001 Communications Equipment • Field Inventory Checklist">
+  <title>Wing Inventory · MT-001</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-brand"><span class="brand-mark">✦</span><span>CAP · MONTANA WING</span></div>
+    <div class="login-card">
+      <div class="login-symbol">▤</div>
+      <div class="eyebrow">COMMUNICATIONS · S8</div>
+      <h1>Wing Inventory</h1>
+      <p>Sign in with your existing CAP Applications account to check and verify MT-001 equipment.</p>
+      <form id="loginForm">
+        <label for="loginEmail">Email address</label>
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="you@example.com" required>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button id="loginBtn" class="btn primary full" type="submit">Sign in <span>→</span></button>
+        <p id="loginError" class="form-error" role="alert"></p>
+      </form>
+      <p class="login-footnote">Inventory access is limited to approved users. If you have an account but cannot see inventory, ask the app administrator to authorize you.</p>
+    </div>
+    <div class="login-footer">MONTANA WING · INVENTORY VERIFICATION</div>
+  </div>
+
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand"><div class="brand-icon">✦</div><div><span class="brand-kicker">CIVIL AIR PATROL · MONTANA WING</span><strong>Wing Inventory</strong></div><span class="unit-chip">MT-001</span></div>
+        <div class="header-actions"><span id="syncStatus" class="sync-status"><i class="sync-dot"></i> Connected</span><button id="refreshBtn" class="icon-button" title="Refresh inventory" aria-label="Refresh inventory">↻</button><button id="manageBtn" class="btn header-manage" hidden>Manage access</button><button id="logoutBtn" class="btn header-logout">Sign out</button></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="overview" aria-label="Inventory overview">
+        <div class="overview-head">
+          <div><div class="section-label"><span class="section-dash"></span> S8 COMMUNICATIONS GEAR</div><h1>Inventory verification<span class="heading-period">.</span></h1><p>Find the equipment, check it off, and keep the wing's records up to date.</p></div>
+          <div class="completion-ring" id="progressRing" aria-label="Completion percentage"><div><strong id="percent">0%</strong><span>verified</span></div></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-label"><span class="stat-dot amber"></span> STILL TO FIND</div><strong id="missingCount">—</strong><span class="stat-sub">Items not yet verified</span></div>
+          <div class="stat"><div class="stat-label"><span class="stat-dot green"></span> FOUND & VERIFIED</div><strong id="foundCount">—</strong><span class="stat-sub">Already accounted for</span></div>
+          <div class="stat"><div class="stat-label"><span class="stat-dot blue"></span> TOTAL EQUIPMENT</div><strong id="totalCount">—</strong><span class="stat-sub">Assigned to MT-001</span></div>
+        </div>
+        <div class="progress-track" aria-hidden="true"><div id="progressFill"></div></div>
+        <div class="progress-text"><span>Verification progress</span><span id="progressText">Loading…</span></div>
+      </section>
+
+      <section class="inventory-panel">
+        <div class="panel-heading"><div><div class="section-label">EQUIPMENT ROSTER</div><h2>Inventory checklist <span id="visibleCount" class="count-bubble">0</span></h2></div><div class="toolbar-actions"><button id="exportBtn" class="btn secondary"><span aria-hidden="true">↓</span> Export CSV</button></div></div>
+        <div class="filter-toolbar">
+          <div class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search tag, equipment, model, person…" aria-label="Search inventory" spellcheck="false"><kbd>/</kbd></div>
+          <div class="tabs" aria-label="Status filter"><button class="tab active" data-status="missing" aria-pressed="true">To find <span id="tabMissing">0</span></button><button class="tab" data-status="all" aria-pressed="false">All <span id="tabAll">0</span></button><button class="tab" data-status="found" aria-pressed="false">Found <span id="tabFound">0</span></button></div>
+        </div>
+        <div class="subfilters">
+          <label><span>Equipment type</span><select id="nounSelect"><option value="">All equipment</option></select></label>
+          <label><span>Location</span><select id="locationSelect"><option value="">All locations</option></select></label>
+          <label><span>Assignment</span><select id="assignedSelect"><option value="">Everyone / unassigned</option></select></label>
+          <button id="clearBtn" class="text-button">Clear filters</button>
+        </div>
+        <div class="list-meta"><span id="resultSummary" aria-live="polite">Loading inventory…</span><span class="meta-tip">Tap the checkbox when you have located the item</span></div>
+        <div class="table-scroll"><table class="inventory-table"><thead><tr><th class="check-head">FOUND</th><th>PROPERTY TAG</th><th>EQUIPMENT</th><th>LOCATION / ASSIGNMENT</th><th class="updated-head">LAST VERIFIED</th></tr></thead><tbody id="inventoryBody"></tbody></table></div>
+        <div id="emptyState" class="empty-state" hidden><div class="empty-icon">⌕</div><h3>No items match your filters</h3><p>Try a different search or clear your filters.</p><button id="emptyClearBtn" class="btn secondary">Clear filters</button></div>
+        <div class="panel-bottom"><span>Changes save automatically to the shared inventory.</span><span id="userLabel"></span></div>
+      </section>
+    </main>
+    <footer class="site-footer">MONTANA WING · DIRECTORATE OF COMMUNICATIONS <span>MT-001 • S8</span></footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="accessDialog" class="access-dialog">
+    <div class="dialog-top"><div><span class="section-label">ADMINISTRATION</span><h2>Inventory access</h2></div><button class="icon-button" id="closeDialog" aria-label="Close">✕</button></div>
+    <p>Anyone you add must already have a CAP Applications login. Authorized users can view and check off all MT-001 equipment.</p>
+    <form id="inviteForm"><label for="inviteEmail">Existing account email</label><div class="invite-row"><input id="inviteEmail" type="email" placeholder="person@example.com" required><button class="btn primary" type="submit">Add access</button></div></form>
+    <div id="inviteError" class="form-error" role="alert"></div>
+    <h3>Authorized email addresses</h3><div id="inviteList" class="invite-list"></div><div class="dialog-footer">CAP Applications administrators always have inventory access.</div>
+  </dialog>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
